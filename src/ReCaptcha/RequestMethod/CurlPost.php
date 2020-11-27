@@ -48,13 +48,19 @@ class CurlPost implements RequestMethod
      */
     private $curl;
 
-    public function __construct(Curl $curl = null)
+    private $connectTimeoutMs;
+
+    private $requestTimeoutMs;
+
+    public function __construct(Curl $curl = null, $connectTimeoutMs = 100, $requestTimeoutMs = 1000)
     {
         if (!is_null($curl)) {
             $this->curl = $curl;
         } else {
             $this->curl = new Curl();
         }
+        $this->connectTimeoutMs = $connectTimeoutMs;
+        $this->requestTimeoutMs = $requestTimeoutMs;
     }
 
     /**
@@ -76,7 +82,9 @@ class CurlPost implements RequestMethod
             CURLINFO_HEADER_OUT => false,
             CURLOPT_HEADER => false,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => true
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_CONNECTTIMEOUT_MS => $this->connectTimeoutMs,
+            CURLOPT_TIMEOUT_MS => $this->requestTimeoutMs,
         );
         $this->curl->setoptArray($handle, $options);
 
